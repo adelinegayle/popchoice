@@ -17,10 +17,11 @@ export default function FormPanel({ form, onFormChange, onSubmit }: FormPanelPro
 
       <div className="mt-4 space-y-4">
         <div>
-          <label className="text-sm font-medium">
+          <label htmlFor="favoriteMovie" className="text-sm font-medium">
             Favourite movie (optional)
           </label>
           <textarea
+            id="favoriteMovie"
             className="mt-1 w-full rounded border p-2"
             rows={3}
             value={form.favoriteMovie}
@@ -31,8 +32,9 @@ export default function FormPanel({ form, onFormChange, onSubmit }: FormPanelPro
         </div>
 
         <div>
-          <label className="text-sm font-medium">Era</label>
+          <label htmlFor="era" className="text-sm font-medium">Era</label>
           <select
+            id="era"
             className="mt-1 w-full rounded border p-2"
             value={form.era}
             onChange={(e) =>
@@ -46,8 +48,9 @@ export default function FormPanel({ form, onFormChange, onSubmit }: FormPanelPro
         </div>
 
         <div>
-          <label className="text-sm font-medium">Vibe</label>
+          <label htmlFor="vibe" className="text-sm font-medium">Vibe</label>
           <select
+            id="vibe"
             className="mt-1 w-full rounded border p-2"
             value={form.vibe}
             onChange={(e) =>
