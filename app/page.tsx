@@ -1,65 +1,168 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+
+type FormState = {
+  favoriteMovie: string;
+  era: "ANY" | "CLASSIC" | "MODERN";
+  vibe: "FUN" | "CHILL" | "SERIOUS";
+};
+
+type View = "FORM" | "LOADING" | "RESULT" | "ERROR";
+
+export default function Page() {
+  const [view, setView] = useState<View>("FORM");
+  const [form, setForm] = useState<FormState>({
+    favoriteMovie: "",
+    era: "ANY",
+    vibe: "FUN",
+  });
+  const [recommendation, setRecommendation] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  async function handleSubmit() {
+    setView("LOADING");
+    setError("");
+
+    try {
+      const response = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get recommendation");
+      }
+
+      const data = await response.json();
+      setRecommendation(data.recommendation);
+      setView("RESULT");
+    } catch (err) {
+      setError("Failed to generate recommendation. Please try again.");
+      setView("ERROR");
+    }
+  }
+
+  function reset() {
+    setView("FORM");
+    setRecommendation("");
+    setError("");
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-gray-100 p-10">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="text-4xl font-bold">PopChoice</h1>
+        <p className="text-gray-600">Simple movie recommender</p>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
+          {/* LEFT PANEL */}
+          <div className="rounded-xl bg-white p-6 shadow">
+            <h2 className="text-xl font-semibold">Your preferences</h2>
+
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="text-sm font-medium">
+                  Favourite movie (optional)
+                </label>
+                <textarea
+                  className="mt-1 w-full rounded border p-2"
+                  rows={3}
+                  value={form.favoriteMovie}
+                  onChange={(e) =>
+                    setForm({ ...form, favoriteMovie: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Era</label>
+                <select
+                  className="mt-1 w-full rounded border p-2"
+                  value={form.era}
+                  onChange={(e) =>
+                    setForm({ ...form, era: e.target.value as any })
+                  }
+                >
+                  <option value="ANY">Any</option>
+                  <option value="CLASSIC">Classic</option>
+                  <option value="MODERN">Modern</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Vibe</label>
+                <select
+                  className="mt-1 w-full rounded border p-2"
+                  value={form.vibe}
+                  onChange={(e) =>
+                    setForm({ ...form, vibe: e.target.value as any })
+                  }
+                >
+                  <option value="FUN">Fun</option>
+                  <option value="CHILL">Chill</option>
+                  <option value="SERIOUS">Serious</option>
+                </select>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                className="w-full rounded bg-black py-2 text-white"
+              >
+                Recommend a movie
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT PANEL */}
+          <div className="rounded-xl bg-white p-6 shadow">
+            <h2 className="text-xl font-semibold">Recommendation</h2>
+
+            {view === "FORM" && (
+              <p className="mt-4 text-gray-500">
+                Fill the form and click recommend.
+              </p>
+            )}
+
+            {view === "LOADING" && (
+              <div className="mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-black"></div>
+                  <p className="text-gray-600">Finding the perfect movie...</p>
+                </div>
+              </div>
+            )}
+
+            {view === "ERROR" && (
+              <div className="mt-4">
+                <p className="text-red-600">{error}</p>
+                <button
+                  onClick={reset}
+                  className="mt-4 rounded border px-3 py-1"
+                >
+                  Try again
+                </button>
+              </div>
+            )}
+
+            {view === "RESULT" && (
+              <div className="mt-4">
+                <div className="whitespace-pre-wrap text-gray-700">
+                  {recommendation}
+                </div>
+
+                <button
+                  onClick={reset}
+                  className="mt-4 rounded border px-3 py-1 hover:bg-gray-50"
+                >
+                  Try again
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
