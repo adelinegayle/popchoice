@@ -1,7 +1,7 @@
 type FormState = {
   favoriteMovie: string;
-  era: "ANY" | "CLASSIC" | "MODERN";
-  vibe: "FUN" | "CHILL" | "SERIOUS";
+  era: 'ANY' | 'CLASSIC' | 'MODERN';
+  vibe: 'FUN' | 'CHILL' | 'SERIOUS';
 };
 
 type FormPanelProps = {
@@ -25,7 +25,7 @@ export default function FormPanel({ form, onFormChange, onSubmit }: FormPanelPro
             className="mt-1 w-full rounded border p-2"
             rows={3}
             value={form.favoriteMovie}
-            onChange={(e) =>
+            onChange={(e)=>
               onFormChange({ ...form, favoriteMovie: e.target.value })
             }
           />
@@ -37,8 +37,8 @@ export default function FormPanel({ form, onFormChange, onSubmit }: FormPanelPro
             id="era"
             className="mt-1 w-full rounded border p-2"
             value={form.era}
-            onChange={(e) =>
-              onFormChange({ ...form, era: e.target.value as FormState["era"] })
+            onChange={(e)=>
+              onFormChange({ ...form, era: e.target.value as FormState['era'] })
             }
           >
             <option value="ANY">Any</option>
@@ -53,8 +53,8 @@ export default function FormPanel({ form, onFormChange, onSubmit }: FormPanelPro
             id="vibe"
             className="mt-1 w-full rounded border p-2"
             value={form.vibe}
-            onChange={(e) =>
-              onFormChange({ ...form, vibe: e.target.value as FormState["vibe"] })
+            onChange={(e)=>
+              onFormChange({ ...form, vibe: e.target.value as FormState['vibe'] })
             }
           >
             <option value="FUN">Fun</option>

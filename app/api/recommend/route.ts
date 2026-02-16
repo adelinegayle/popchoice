@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { GoogleGenAI } from '@google/genai';
 
@@ -7,7 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY!
 );
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+const genAI = new GoogleGenAI({});
 
 interface RequestBody {
   favoriteMovie: string;
@@ -26,7 +25,7 @@ interface Movie {
   similarity: number;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const body: RequestBody = await request.json();
     const { favoriteMovie, era, vibe } = body;
@@ -54,13 +53,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (!movies || movies.length === 0) {
-      return NextResponse.json(
-        { error: 'No matching movies found' },
-        { status: 404 }
-      );
+      return new Response(JSON.stringify({ error: 'No matching movies found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
-    const moviesContext = movies.map((m: Movie) => 
+    const moviesContext = movies.map((m: Movie)=> 
       `${m.title} (${m.year}) - ${m.description} [Rating: ${m.score}/10]`
     ).join('\n\n');
 
@@ -87,17 +86,19 @@ export async function POST(request: NextRequest) {
     const result = await chatModel;
     const recommendation = result.text;
 
-    return NextResponse.json({
+    return new Response(JSON.stringify({
       recommendation,
       query: queryText,
       matchedMovies: movies.length
+    }), {
+      headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
     console.error('Error generating recommendation:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate recommendation' },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Failed to generate recommendation' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

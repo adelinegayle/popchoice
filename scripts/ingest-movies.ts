@@ -11,7 +11,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const genAI = new GoogleGenAI({});
 
 interface Movie {
   title: string;
@@ -25,7 +25,7 @@ interface Movie {
 
 function parseMoviesFile(filePath: string): Movie[] {
   const content = readFileSync(filePath, 'utf-8');
-  const movieBlocks = content.split('\n\n').filter(block => block.trim());
+  const movieBlocks = content.split('\n\n').filter(block=> block.trim());
   
   const movies: Movie[] = [];
   
@@ -117,7 +117,7 @@ async function ingestMovies() {
       await insertMovie(movie, embedding);
       console.log(`Inserted into database\n`);
       
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve=> setTimeout(resolve, 500));
       
     } catch (error) {
       console.error(`Error processing ${movie.title}:`, error);

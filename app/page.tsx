@@ -1,55 +1,55 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import FormPanel from "./components/FormPanel";
-import ResultPanel from "./components/ResultPanel";
+import { useState } from 'react';
+import FormPanel from './components/FormPanel';
+import ResultPanel from './components/ResultPanel';
 
 type FormState = {
   favoriteMovie: string;
-  era: "ANY" | "CLASSIC" | "MODERN";
-  vibe: "FUN" | "CHILL" | "SERIOUS";
+  era: 'ANY' | 'CLASSIC' | 'MODERN';
+  vibe: 'FUN' | 'CHILL' | 'SERIOUS';
 };
 
-type View = "FORM" | "LOADING" | "RESULT" | "ERROR";
+type View = 'FORM' | 'LOADING' | 'RESULT' | 'ERROR';
 
 export default function Page() {
-  const [view, setView] = useState<View>("FORM");
+  const [view, setView] = useState<View>('FORM');
   const [form, setForm] = useState<FormState>({
-    favoriteMovie: "",
-    era: "ANY",
-    vibe: "FUN",
+    favoriteMovie: '',
+    era: 'ANY',
+    vibe: 'FUN',
   });
-  const [recommendation, setRecommendation] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [recommendation, setRecommendation] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
   async function handleSubmit() {
-    setView("LOADING");
-    setError("");
+    setView('LOADING');
+    setError('');
 
     try {
-      const response = await fetch("/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get recommendation");
+        throw new Error('Failed to get recommendation');
       }
 
       const data = await response.json();
       setRecommendation(data.recommendation);
-      setView("RESULT");
-    } catch (err) {
-      setError("Failed to generate recommendation. Please try again.");
-      setView("ERROR");
+      setView('RESULT');
+    } catch {
+      setError('Failed to generate recommendation. Please try again.');
+      setView('ERROR');
     }
   }
 
   function reset() {
-    setView("FORM");
-    setRecommendation("");
-    setError("");
+    setView('FORM');
+    setRecommendation('');
+    setError('');
   }
 
   return (
