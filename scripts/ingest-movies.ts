@@ -112,15 +112,15 @@ async function ingestMovies() {
     
     try {
       const embedding = await generateEmbedding(movie);
-      console.log(`  Generated embedding (${embedding.length} dimensions)`);
+      console.log(`Generated embedding (${embedding.length} dimensions)`);
       
       await insertMovie(movie, embedding);
-      console.log(`  Inserted into database\n`);
+      console.log(`Inserted into database\n`);
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
     } catch (error) {
-      console.error(`  Error processing ${movie.title}:`, error);
+      console.error(`Error processing ${movie.title}:`, error);
     }
   }
   
